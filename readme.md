@@ -19,13 +19,16 @@ A través de la implementación de los tópicos podemos hacer referencia a los n
 
 ## DESARROLLO
 
+Básicamente hice uso de los elementos que habiamos aplicado con anterioridad en la clase, solamente tenía cambios muy pequeños e implemente nuevas líneas de código, en este caso de raw_input que permite la lectura de una cadena para que al leerla, inmediatamente realice la tarea que deseamos que haga, en este caso sea avanzar, girar o detener por completo el robot Turtle Bot 3. Esto mediante la ayuda de elementos como Velocidad lineal, que es la que permite el avance de forma normal, la velocidad angular que permite el giro en radianes y finalmente con una instrucción que permite que tanto la velocidad lineal como angular se vayan a 0 y el robot se detenga por completo.
+
 ## CONCLUSIONES
 
-Se pudieron cumplir de forma satisfactoria los objetivos anteriormente planteados, ya que con el manejo correcto de la programación así como de los elementos como los nodos, tópicos y mensajes que deseamos mandar con ayuda de los publicadores y suscriptores el intercambio de información de un lugar a otro se logró además de que dejó una idea más clara para que futuros propósitos pueden servir el implementar estos elementos.
+Se pudieron cumplir de forma satisfactoria los objetivos anteriormente planteados, ya que con el manejo correcto de la programación así como de los elementos como los nodos, tópicos y mensajes que deseamos mandar con ayuda de los publicadores y suscriptores el intercambio de información de un lugar a otro se logró además de que dejó una idea más clara para que futuros propósitos pueden servir el implementar estos elementos. Podría mejorar en otros elementos además de que me causo conflicto la implementación de las actualizaciones en GitHub porque de pronto me arrojaba errores que no podía implementar de forma adecuada estas actualizaciones.
 
 ## AUTOR 
 
-Cruz Montero Carlos Enrique GitHubProfile: https://github.com/CarlosCruz950 kcruzmontero@gmail.com
+Cruz Montero Carlos Enrique GitHubProfile: https://github.com/CarlosCruz950 
+kcruzmontero@gmail.com
 
 ## BIBLIOGRAFÍA
 
