@@ -28,6 +28,22 @@ A través de la implementación de los tópicos podemos hacer referencia a los n
 
 Básicamente hice uso de los elementos que habiamos aplicado con anterioridad en la clase, solamente tenía cambios muy pequeños e implemente nuevas líneas de código, en este caso de raw_input que permite la lectura de una cadena para que al leerla, inmediatamente realice la tarea que deseamos que haga, en este caso sea avanzar, girar o detener por completo el robot Turtle Bot 3. Esto mediante la ayuda de elementos como Velocidad lineal, que es la que permite el avance de forma normal, la velocidad angular que permite el giro en radianes y finalmente con una instrucción que permite que tanto la velocidad lineal como angular se vayan a 0 y el robot se detenga por completo.
 
+def process_msg_callback(msg):
+        #comm=comando a ingresar para mover el robot
+    comm=raw_input("Ingrese la instrucción a realizar:")
+    if comm[:1]=='Avanza':
+            vel.linear.x=float(comm[1:])
+    elif comm[:2]=="Gira":
+            vel.angular.z=float(comm[2:])
+    elif comm=="Detente":
+            vel.linear.x=0
+            vel.angular.z=0
+    else:
+            rospy.loginfo("Error")
+    pub1.publish(vel)
+    
+Ya después únicamente lo que se hace es inicializar el nodo para que pueda lograr el cometido de forma adecuada, esto mediante un suscriptor y un publicador que permitirán este intercambio de información.
+
 ## CONCLUSIONES
 
 Se pudieron cumplir de forma satisfactoria los objetivos anteriormente planteados, ya que con el manejo correcto de la programación así como de los elementos como los nodos, tópicos y mensajes que deseamos mandar con ayuda de los publicadores y suscriptores el intercambio de información de un lugar a otro se logró además de que dejó una idea más clara para que futuros propósitos pueden servir el implementar estos elementos. Podría mejorar en otros elementos además de que me causo conflicto la implementación de las actualizaciones en GitHub porque de pronto me arrojaba errores que no podía implementar de forma adecuada estas actualizaciones.
