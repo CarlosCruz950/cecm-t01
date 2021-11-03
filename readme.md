@@ -1,6 +1,6 @@
 # Tarea 01
 
-| Option | Description |
+| Asignatura | Descripción |
 | ------ | ----------- |
 | Temas Selectos de Mecatrónica  | 03 |
 | TSM-2022-I| Tarea 01 |
