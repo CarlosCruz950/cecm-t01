@@ -28,6 +28,7 @@ A través de la implementación de los tópicos podemos hacer referencia a los n
 
 Básicamente hice uso de los elementos que habiamos aplicado con anterioridad en la clase, solamente tenía cambios muy pequeños e implemente nuevas líneas de código, en este caso de raw_input que permite la lectura de una cadena para que al leerla, inmediatamente realice la tarea que deseamos que haga, en este caso sea avanzar, girar o detener por completo el robot Turtle Bot 3. Esto mediante la ayuda de elementos como Velocidad lineal, que es la que permite el avance de forma normal, la velocidad angular que permite el giro en radianes y finalmente con una instrucción que permite que tanto la velocidad lineal como angular se vayan a 0 y el robot se detenga por completo.
 
+```python
 def process_msg_callback(msg):
         #comm=comando a ingresar para mover el robot
     comm=raw_input("Ingrese la instrucción a realizar:")
@@ -41,7 +42,8 @@ def process_msg_callback(msg):
     else:
             rospy.loginfo("Error")
     pub1.publish(vel)
-    
+```
+
 Ya después únicamente lo que se hace es inicializar el nodo para que pueda lograr el cometido de forma adecuada, esto mediante un suscriptor y un publicador que permitirán este intercambio de información.
 
 ## CONCLUSIONES
