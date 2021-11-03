@@ -5,7 +5,7 @@
 | Temas Selectos de Mecatrónica  | 03 |
 | TSM-2022-I| Tarea 01 |
 | Robotica-2022-I   | Tarea 01 |
-|    | ROS Simulación|
+| Carlos Cruz   | ROS Simulación|
 
 ## OBJETIVOS
 
