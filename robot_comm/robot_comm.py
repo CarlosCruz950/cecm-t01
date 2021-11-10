@@ -1,51 +1,112 @@
 #!/usr/bin/env python
-
 import rospy
-from nav_msgs.msg import Odometry
-from pubsub.msg import Estatus
 from geometry_msgs.msg import Twist
+import sys, select, os
 
-def process_msg_callback(msg):
-        #comm=comando a ingresar para mover el robot
-    comm=raw_input("Ingrese la instrucción a realizar:")
-    if comm[:1]=='Avanza':
-            vel.linear.x=float(comm[1:])
-    elif comm[:2]=="Gira":
-            vel.angular.z=float(comm[2:])
-    elif comm=="Detente":
-            vel.linear.x=0
-            vel.angular.z=0
+WAFFLE_MAX_LIN_VEL = 1
+WAFFLE_MAX_ANG_VEL = 2
+
+LIN_VEL_STEP_SIZE = 0.5
+ANG_VEL_STEP_SIZE = 0.5
+
+msg = """
+
+CONTROL DE ROBOT WAFFLE
+---------------------------
+Comandos de movimiento:
+Escribe "Avanza" o "avanza" para ir hacia delante
+Escribe "Detente" o "detente" para detenerte
+Escribe "Gira" o "gira" para girar
+Escribe "Exit" o "exit" para salir del programa
+"""
+
+e = """Fallo la comunicacion"""
+
+def makeSimpleProfile(output, input, slop):
+    if input > output:
+        output = min( input, output + slop)
+    elif input < output:
+        output = max( input, output - slop)
     else:
-            rospy.loginfo("Error")
-    pub1.publish(vel)
-    dx = msg.twist.twist.linear.x
-    #Debido a que nuestro robot es (2,0) no puede moverse sobre el eje Y
-    #dy = msg.twist.twist.linear.y
-    theta = round(msg.twist.twist.angular.z, 2)
-    rospy.loginfo('La velocidad lineal del robot es de={:.2f} m/s, su velocidad angular es={:.2f} radianes'.format(dx,theta))
-    if dx == 0.0 and theta == 0.0:
-            pubmsg.codigo=0
-            pubmsg.estado='Detenido'
-    elif dx != 0.0 and theta == 0.0:
-            pubmsg.codigo = 100 
-            pubmsg.estado = 'Avanza linealmente: {} m'.format(dx)
-    elif dx == 0.0 and theta != 0.0:
-            pubmsg.codigo = 200 
-            pubmsg.estado = 'Giro(angular): {} rads' .format(theta)
-    elif dx != 0.0 and theta != 0.0:
-            pubmsg.codigo = 300 
-            pubmsg.estado = 'Velocidad lineal: {} m y angular:{} rads'.format(dx,theta)
+        output = input
+
+    return output
+
+def constrain(input, low, high):
+    if input < low:
+      input = low
+    elif input > high:
+      input = high
     else:
-            pubmsg.codigo = 1000
-            pubmsg.estado = 'Error'
-    pub2.publish(pubmsg)
+      input = input
 
+    return input
 
-rospy.init_node('robot_comm')
-sub = rospy. Subscriber('odom', Odometry, process_msg_callback)
-pub1 = rospy.Publisher('cmd_vel',Twist,queue_size=1)
-pub2 = rospy.Publisher('estatus', Estatus, queue_size=2)    
-rate = rospy.Rate(2)
-vel = Twist()
-pubmsg=Estatus()
-rospy.spin()
+def checkLinearLimitVelocity(vel):
+    if turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
+      vel = constrain(vel, -WAFFLE_MAX_LIN_VEL, WAFFLE_MAX_LIN_VEL)
+    return vel
+
+def checkAngularLimitVelocity(vel):
+    if turtlebot3_model == "waffle" or turtlebot3_model == "waffle_pi":
+      vel = constrain(vel, -WAFFLE_MAX_ANG_VEL, WAFFLE_MAX_ANG_VEL)
+    return vel
+
+if __name__=="__main__":
+    rospy.init_node('turtlebot3_teleop')
+    pub = rospy.Publisher('cmd_vel', Twist, queue_size=10)
+
+    # Obtenemos el modelo de turtlebot (waffle)
+    turtlebot3_model = rospy.get_param("model", "waffle")
+
+    # Inicializamos nuestras variables para no tener errores
+    status = 0
+    target_linear_vel   = 0.0
+    target_angular_vel  = 0.0
+    control_linear_vel  = 0.0
+    control_angular_vel = 0.0
+
+    #Comenzamos a pedir nuetras variables
+    try:
+        print(msg)
+        print("\n\nPor favor ingresa la accion que deseas realizar\n\n")
+        while(1):
+            key=input("--> ")# Aqui la función recibe nuestro string
+            # Preguntamos la accion y dependiendo de eso hacemos lo que nos indica
+            if key == 'Avanza' or key == "avanza" :
+                target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
+                status = status + 1
+                print("\nEl robot se encuentra avanzando\n")
+            elif key == 'Gira' or key == "gira" :
+                target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
+                status = status + 1
+                print("\nEl robot se encuentra girando\n")
+            elif key == 'Detente' or key == 'detente' :
+                target_linear_vel   = 0.0
+                control_linear_vel  = 0.0
+                target_angular_vel  = 0.0
+                control_angular_vel = 0.0
+                print("\nProceso completo. Robot estático\n")
+            elif key == "Exit" or key == "exit":
+                exit()
+            else:
+                print("\nPor favor ingresa bien las claves para realizar las acciones\n")
+
+            twist = Twist()
+
+            control_linear_vel = makeSimpleProfile(control_linear_vel, target_linear_vel, (LIN_VEL_STEP_SIZE/2.0))
+            twist.linear.x = control_linear_vel; twist.linear.y = 0.0; twist.linear.z = 0.0
+
+            control_angular_vel = makeSimpleProfile(control_angular_vel, target_angular_vel, (ANG_VEL_STEP_SIZE/2.0))
+            twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = control_angular_vel
+
+            pub.publish(twist)
+
+    except:
+        print(e)
+
+    finally:
+        twist = Twist()
+        twist.linear.x = 0.0; twist.linear.y = 0.0; twist.linear.z = 0.0
+        twist.angular.x = 0.0; twist.angular.y = 0.0; twist.angular.z = 0.0
+        pub.publish(twist)
