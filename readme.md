@@ -29,19 +29,27 @@ A través de la implementación de los tópicos podemos hacer referencia a los n
 Básicamente hice uso de los elementos que habiamos aplicado con anterioridad en la clase, solamente tenía cambios muy pequeños e implemente nuevas líneas de código, en este caso de raw_input que permite la lectura de una cadena para que al leerla, inmediatamente realice la tarea que deseamos que haga, en este caso sea avanzar, girar o detener por completo el robot Turtle Bot 3. Esto mediante la ayuda de elementos como Velocidad lineal, que es la que permite el avance de forma normal, la velocidad angular que permite el giro en radianes y finalmente con una instrucción que permite que tanto la velocidad lineal como angular se vayan a 0 y el robot se detenga por completo.
 
 ```python
-def process_msg_callback(msg):
-        #comm=comando a ingresar para mover el robot
-    comm=raw_input("Ingrese la instrucción a realizar:")
-    if comm[:1]=='Avanza':
-            vel.linear.x=float(comm[1:])
-    elif comm[:2]=="Gira":
-            vel.angular.z=float(comm[2:])
-    elif comm=="Detente":
-            vel.linear.x=0
-            vel.angular.z=0
-    else:
-            rospy.loginfo("Error")
-    pub1.publish(vel)
+while(1):
+            key=input("--> ")# Aqui la función recibe nuestro string
+            # Preguntamos la accion y dependiendo de eso hacemos lo que nos indica
+            if key == 'Avanza' or key == "avanza" :
+                target_linear_vel = checkLinearLimitVelocity(target_linear_vel + LIN_VEL_STEP_SIZE)
+                status = status + 1
+                print("\nEl robot se encuentra avanzando\n")
+            elif key == 'Gira' or key == "gira" :
+                target_angular_vel = checkAngularLimitVelocity(target_angular_vel + ANG_VEL_STEP_SIZE)
+                status = status + 1
+                print("\nEl robot se encuentra girando\n")
+            elif key == 'Detente' or key == 'detente' :
+                target_linear_vel   = 0.0
+                control_linear_vel  = 0.0
+                target_angular_vel  = 0.0
+                control_angular_vel = 0.0
+                print("\nProceso completo. Robot estático\n")
+            elif key == "Exit" or key == "exit":
+                exit()
+            else:
+                print("\nPor favor ingresa bien las claves para realizar las acciones\n")
 ```
 
 Ya después únicamente lo que se hace es inicializar el nodo para que pueda lograr el cometido de forma adecuada, esto mediante un suscriptor y un publicador que permitirán este intercambio de información.
